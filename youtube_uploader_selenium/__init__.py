@@ -40,6 +40,13 @@ class YouTubeUploader:
             self.logger.warning("The video title was set to {}".format(Path(self.video_path).stem))
         if not self.metadata_dict[Constant.VIDEO_DESCRIPTION]:
             self.logger.warning("The video description was not found in a metadata file")
+        if self.metadata_dict[Constant.VIDEO_PRIVACY] not in ['PUBLIC', 'UNLISTED', 'PRIVATE']:
+            if not self.metadata_dict[Constant.VIDEO_PRIVACY]:
+                self.logger.warning("No privacy was specified in a metadata file")
+            else:
+                self.logger.warning("Incorrect privacy was specified in a metadata file")
+            self.metadata_dict[Constant.VIDEO_PRIVACY] = 'PUBLIC'
+            self.logger.warning("The video will set to PUBLIC by default")
 
     def upload(self):
         try:
@@ -106,9 +113,9 @@ class YouTubeUploader:
         self.browser.find(By.ID, Constant.NEXT_BUTTON).click()
         self.logger.debug('Clicked another {}'.format(Constant.NEXT_BUTTON))
 
-        public_main_button = self.browser.find(By.NAME, Constant.PUBLIC_BUTTON)
-        self.browser.find(By.ID, Constant.RADIO_LABEL, public_main_button).click()
-        self.logger.debug('Made the video {}'.format(Constant.PUBLIC_BUTTON))
+        privacy_main_button = self.browser.find(By.NAME, self.metadata_dict[Constant.VIDEO_PRIVACY].upper())
+        self.browser.find(By.ID, Constant.RADIO_LABEL, privacy_main_button).click()
+        self.logger.debug('Made the video {}'.format(self.metadata_dict[Constant.VIDEO_PRIVACY].upper()))
 
         video_id = self.__get_video_id()
 
