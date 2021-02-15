@@ -42,9 +42,10 @@ python3 upload.py --video rockets.flv
 If it is the first time you've run the script, a browser window should popup and prompt you to provide YouTube credentials (and then simply press <it>Enter</it> after a successful login).
 A token will be created and stored in a file in the local directory for subsequent use.
 
-Video title, description and other metadata can specified via a JSON file using the `--meta` flag:
+Video title, description and other metadata can specified via a JSON file using the `--meta` flag,
+Thumbnail (jpg/png only) can be added using the `--thumbnail` flag:
 ```bash
-python3 upload.py --video rockets.flv --meta metadata.json
+python3 upload.py --video rockets.flv --meta metadata.json --thumbnail rockets_pic.jpg
 ```
 
 An example JSON file would be:
