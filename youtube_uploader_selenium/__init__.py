@@ -24,9 +24,13 @@ class YouTubeUploader:
     """A class for uploading videos on YouTube via Selenium using metadata JSON file
     to extract its title, description etc"""
 
-    def __init__(self, video_path: str, metadata_json_path: Optional[str] = None) -> None:
+    def __init__(self, video_path: str,
+                 metadata_json_path: Optional[str] = None,
+                 thumbnail_path: Optional[str] = None
+                 ) -> None:
         self.video_path = video_path
         self.metadata_dict = load_metadata(metadata_json_path)
+        self.thumbnail_path = thumbnail_path
         current_working_dir = str(Path.cwd())
         self.browser = Firefox(current_working_dir, current_working_dir)
         self.logger = logging.getLogger(__name__)
@@ -48,6 +52,11 @@ class YouTubeUploader:
                                     .format(self.metadata_dict[Constant.VIDEO_PRIVACY].upper()))
             self.metadata_dict[Constant.VIDEO_PRIVACY] = 'PUBLIC'
             self.logger.warning("The video will set to PUBLIC by default")
+        if self.thumbnail_path:
+            suffix = (Path.cwd() / self.thumbnail_path).suffix
+            if suffix not in ['.jpg', '.jpeg', '.jfif', '.png']:
+                self.logger.warning("Skipping thumbnail. Incorrect file type (Only jpg and png files are allowed).")
+                self.thumbnail_path = None
 
     def upload(self):
         try:
@@ -103,6 +112,12 @@ class YouTubeUploader:
             description_field.send_keys(self.metadata_dict[Constant.VIDEO_DESCRIPTION])
             self.logger.debug(
                 'The video description was set to \"{}\"'.format(self.metadata_dict[Constant.VIDEO_DESCRIPTION]))
+
+        if self.thumbnail_path:
+            absolute_thumbnail_path = str(Path.cwd() / self.thumbnail_path)
+            self.browser.find(By.XPATH, Constant.INPUT_FILE_THUMBNAIL).send_keys(absolute_thumbnail_path)
+            self.logger.debug('Attached thumbnail {}'.format(self.thumbnail_path))
+            time.sleep(Constant.USER_WAITING_TIME)
 
         kids_section = self.browser.find(By.NAME, Constant.NOT_MADE_FOR_KIDS_LABEL)
         self.browser.find(By.ID, Constant.RADIO_LABEL, kids_section).click()
