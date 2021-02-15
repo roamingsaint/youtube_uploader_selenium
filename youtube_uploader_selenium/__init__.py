@@ -40,12 +40,12 @@ class YouTubeUploader:
             self.logger.warning("The video title was set to {}".format(Path(self.video_path).stem))
         if not self.metadata_dict[Constant.VIDEO_DESCRIPTION]:
             self.logger.warning("The video description was not found in a metadata file")
-        if self.metadata_dict[Constant.VIDEO_PRIVACY] not in ['PUBLIC', 'UNLISTED', 'PRIVATE']:
+        if self.metadata_dict[Constant.VIDEO_PRIVACY].upper() not in ['PUBLIC', 'UNLISTED', 'PRIVATE']:
             if not self.metadata_dict[Constant.VIDEO_PRIVACY]:
                 self.logger.warning("No privacy was specified in a metadata file")
             else:
                 self.logger.warning("{} is not a supported privacy setting (Only public/unlisted/private allowed)."
-                                    .format(self.metadata_dict[Constant.VIDEO_PRIVACY]))
+                                    .format(self.metadata_dict[Constant.VIDEO_PRIVACY].upper()))
             self.metadata_dict[Constant.VIDEO_PRIVACY] = 'PUBLIC'
             self.logger.warning("The video will set to PUBLIC by default")
 
